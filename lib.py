@@ -1,6 +1,23 @@
 import json
 import os
 
+
+commands = {
+    'add': 'add_task(tasks, *cmds)',
+    'del': 'del_task(tasks, cmds)',
+    'cpl': 'cpl_task(tasks, cmds)',
+    'list': 'list_tasks(tasks)',
+    'help': 'list_commands()',
+}
+
+
+def list_commands() -> None:
+    # lists all commands
+    for command in commands:
+        print(command, end=', ')
+    print('exit')
+
+
 def check_user_data():
     # checks for the relevant files
     # if not, creates them
@@ -24,62 +41,58 @@ def check_user_data():
             json.dump({}, f)
 
 
-def add_task(name, do=None, due=None, prior=None, proj=None) -> None:
-    # adds a task to the data/ file
-    with open('data/tasks.json', 'r+') as f:
-        tasks = json.load(f)
-        tasks[name] = {'do': do, 'due': due, 'prior': prior, 'proj': proj}
-        f.seek(0)
-        json.dump(tasks, f, indent=4)
-        f.truncate()
-        print(f'+ Task {name} added.')
+def save_user_data(data, z: str) -> None:
+    if z == 'tasks':
+        with open('data/tasks.json', 'w') as f:
+            json.dump(data, f, indent=4)
+    elif z == 'trash':
+        with open('data/trash.json', 'w') as f:
+            json.dump(data, f, indent=4)
+    elif z == 'completed':
+        with open('data/completed.json', 'w') as f:
+            json.dump(data, f, indent=4)
 
 
-def del_task(names) -> None:
+def add_task(tasks, name, do=None, due=None, prior=None, proj=None) -> None:
+    # adds a task to the data/tasks.json file
+    tasks[name] = {'do': do, 'due': due, 'prior': prior, 'proj': proj}
+    save_user_data(tasks, 'tasks')
+    print(f'+ Task {name} added.')
+
+
+def del_task(tasks, names) -> None:
     # moves a task to the trash.json file
-    with open('data/tasks.json', 'r+') as f:
-        with open('data/trash.json', 'r+') as f2:
-            tasks = json.load(f)
-            for name in names:
-                if name in tasks:
-                    trash = json.load(f2)
-                    trash[name] = tasks[name]
-                    f2.seek(0)
-                    json.dump(trash, f2, indent=4)
-                    f2.truncate()
-                    del tasks[name]
-                    f.seek(0)
-                    json.dump(tasks, f, indent=4)
-                    f.truncate()
-                    print(f'+ Task {name} moved to trash.')
-                else:
-                    print(f'+ Task {name} not found.')
+    with open('data/trash.json', 'r') as f:
+        trash = json.load(f)
+    
+    for name in names:
+        try:
+            trash[name] = tasks.pop(name)
+            print(f'- Task {name} moved to trash.')
+        except KeyError:
+            print(f'- Task {name} not found.')
+    
+    save_user_data(tasks, 'tasks')
+    save_user_data(trash, 'trash')
 
 
-def cpl_task(names) -> None:
+def cpl_task(tasks, names) -> None:
     # moves a task to the completed.json file
-    with open('data/tasks.json', 'r+') as f:
-        with open('data/completed.json', 'r+') as f2:
-            tasks = json.load(f)
-            for name in names:
-                if name in tasks:
-                    completed = json.load(f2)
-                    completed[name] = tasks[name]
-                    f2.seek(0)
-                    json.dump(completed, f2, indent=4)
-                    f2.truncate()
-                    del tasks[name]
-                    f.seek(0)
-                    json.dump(tasks, f, indent=4)
-                    f.truncate()
-                    print(f'+ Task {name} completed.')
-                else:
-                    print(f'+ Task {name} not found.')
+    with open('data/completed.json', 'r') as f:
+        completed = json.load(f)
+    
+    for name in names:
+        try:
+            completed[name] = tasks.pop(name)
+            print(f' Task {name} completed.')
+        except KeyError:
+            print(f' Task {name} not found.')
+    
+    save_user_data(tasks, 'tasks')
+    save_user_data(completed, 'completed')
 
 
-def list_tasks() -> None:
+def list_tasks(tasks) -> None:
     # lists all tasks in the tasks.json file
-    with open('data/tasks.json', 'r') as f:
-        tasks = json.load(f)
-        for task in tasks:
-            print(task, tasks[task])
+    for task in tasks:
+        print(task, tasks[task])

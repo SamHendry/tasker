@@ -1,25 +1,24 @@
 from lib import *
+import json
 
 def main():
     check_user_data()
 
+    with open('data/tasks.json', 'r') as f:
+        tasks = json.load(f)
+    
     while True:
+        # get commands
         cmds = input('Enter a command: ')
-
         cmds = cmds.split(' ')
-        if cmds[0] == 'add':
-            add_task(*cmds[1:])
-        elif cmds[0] == 'del':
-            del_task(cmds[1:])
-        elif cmds[0] == 'cpl':
-            cpl_task(cmds[1:])
-        elif cmds[0] == 'list':
-            list_tasks()
-        elif cmds[0] == 'exit':
-            print('Exiting...')
-            break
-        else:
-            print('Invalid command.')
+        first = cmds.pop(0)
+
+        # execute commands
+        if first == 'exit': break
+        try:
+            exec(commands[first])
+        except KeyError:
+            print('Command not found.')
 
 if __name__ == '__main__':
     main()
