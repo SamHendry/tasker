@@ -3,13 +3,14 @@ import json
 
 def main():
     check_user_data()
+    print()
 
     with open('data/tasks.json', 'r') as f:
         tasks = json.load(f)
     
     while True:
         # get commands
-        cmds = input('Enter a command: ')
+        cmds = input('tasker > ')
         cmds = cmds.split(' ')
         first = cmds.pop(0)
 

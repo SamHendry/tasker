@@ -1,14 +1,16 @@
 import json
 import os
+import termtables as tt # needs to be installed (TODO: put in requirements.txt)
 
 
 commands = {
     'help': 'list_commands()',
-    'add': 'add_task(tasks, *cmds)',
-    'del': 'del_task(tasks, cmds)',
-    'cpl': 'cpl_task(tasks, cmds)',
+    'a': 'add_task(tasks, *cmds)',
+    'd': 'del_task(tasks, cmds)',
+    'c': 'cpl_task(tasks, cmds)',
     'list': 'list_tasks(tasks)',
-    'display': 'display_tasks(tasks)',
+    'dsp': 'display_tasks(tasks)',
+    'pdsp': 'tt_display(tasks)'
 }
 
 
@@ -54,9 +56,9 @@ def save_user_data(data, z: str) -> None:
             json.dump(data, f, indent=4)
 
 
-def add_task(tasks, name, do=None, due=None, prior=None, proj=None) -> None:
+def add_task(tasks, name, do=None, due=None, prior=None, proj=None, notes=None) -> None:
     # adds a task to the data/tasks.json file
-    tasks[name] = {'do': do, 'due': due, 'prior': prior, 'proj': proj}
+    tasks[name] = {'do': do, 'due': due, 'prior': prior, 'proj': proj, 'notes': notes}
     save_user_data(tasks, 'tasks')
     print(f'+ Task {name} added.')
 
@@ -85,9 +87,9 @@ def cpl_task(tasks, names) -> None:
     for name in names:
         try:
             completed[name] = tasks.pop(name)
-            print(f' Task {name} completed.')
+            print(f'✓ Task {name} completed.')
         except KeyError:
-            print(f' Task {name} not found.')
+            print(f'✓ Task {name} not found.')
     
     save_user_data(tasks, 'tasks')
     save_user_data(completed, 'completed')
@@ -99,14 +101,27 @@ def list_tasks(tasks) -> None:
         print(task, tasks[task])
 
 
-def display_tasks(tasks):
+def display_tasks(tasks): # rudimentary
     # displays all tasks in the tasks.json file in a table format
     print()
-    print('name \t\tdo \tdue \tprior \taproj')
+    print('name \t\tdo \tdue \tprior \tproj \tnotes')
     for task in tasks:
         spaces = 16-len(task)
         print(task, end=' ' * spaces)
-        for key in tasks[task]:
-            print(tasks[task][key], end='\t')
+        for attribute in tasks[task]:
+            if tasks[task][attribute] is None:
+                print('\t', end='')
+            else:
+                print(tasks[task][attribute], end='\t')
         print()
     print()
+
+
+def tt_display(tasks):
+    header = ['name', 'do', 'due', 'prior', 'proj', 'notes']
+    # convert dic to displayable array
+    data = []
+    for task in tasks:
+        data.append([task, tasks[task]['do'], tasks[task]['due'], tasks[task]['prior'], tasks[task]['proj'], tasks[task]['notes']])
+    # display
+    tt.print(data, header=header, style=tt.styles.ascii_thin_double, padding=(0, 1), alignment='c')
