@@ -9,7 +9,10 @@ def main():
         tasks = json.load(f)
     
     # initial display
-    tt_display(tasks)
+    if tasks == {}:
+        print('No tasks found.')
+    else:
+        tt_display(tasks)
 
     while True:
         # get commands
