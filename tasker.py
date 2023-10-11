@@ -9,6 +9,8 @@ def main():
         tasks = json.load(f)
     
     while True:
+        # initial display
+        tt_display(tasks)
         # get commands
         cmds = input('tasker > ')
         cmds = cmds.split(' ')

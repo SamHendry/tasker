@@ -101,12 +101,14 @@ def list_tasks(tasks) -> None:
 
 
 def tt_display(tasks):
-    header = ['name', 'do', 'due', 'prior', 'proj', 'notes']
+    header = ['#', 'name', 'do', 'due', 'prior', 'proj', 'notes']
     # convert dic to displayable array
     data = []
-    for task in tasks:
+    for i, task in enumerate(tasks):
         data.append([
-            task, tasks[task]['do'], 
+            i,
+            task, 
+            tasks[task]['do'], 
             tasks[task]['due'], 
             tasks[task]['prior'], 
             tasks[task]['proj'], 
