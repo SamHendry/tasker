@@ -9,8 +9,7 @@ commands = {
     'd': 'del_task(tasks, cmds)',
     'c': 'cpl_task(tasks, cmds)',
     'list': 'list_tasks(tasks)',
-    'dsp': 'display_tasks(tasks)',
-    'pdsp': 'tt_display(tasks)'
+    'dsp': 'tt_display(tasks)'
 }
 
 
@@ -101,27 +100,21 @@ def list_tasks(tasks) -> None:
         print(task, tasks[task])
 
 
-def display_tasks(tasks): # rudimentary
-    # displays all tasks in the tasks.json file in a table format
-    print()
-    print('name \t\tdo \tdue \tprior \tproj \tnotes')
-    for task in tasks:
-        spaces = 16-len(task)
-        print(task, end=' ' * spaces)
-        for attribute in tasks[task]:
-            if tasks[task][attribute] is None:
-                print('\t', end='')
-            else:
-                print(tasks[task][attribute], end='\t')
-        print()
-    print()
-
-
 def tt_display(tasks):
     header = ['name', 'do', 'due', 'prior', 'proj', 'notes']
     # convert dic to displayable array
     data = []
     for task in tasks:
-        data.append([task, tasks[task]['do'], tasks[task]['due'], tasks[task]['prior'], tasks[task]['proj'], tasks[task]['notes']])
+        data.append([
+            task, tasks[task]['do'], 
+            tasks[task]['due'], 
+            tasks[task]['prior'], 
+            tasks[task]['proj'], 
+            tasks[task]['notes']
+        ])
     # display
-    tt.print(data, header=header, style=tt.styles.ascii_thin_double, padding=(0, 1), alignment='c')
+    tt.print(
+        data, 
+        header=header, 
+        padding=(0, 1), 
+        alignment='l')
