@@ -102,9 +102,10 @@ def list_tasks(tasks) -> None:
 def display_tasks(tasks):
     # displays all tasks in the tasks.json file in a table format
     # TODO: fix tabbing
-    print('name \t\t do \t due \t prior \t proj')
+    print('name \t\tdo \tdue \tprior \taproj')
     for task in tasks:
-        print(task, end='\t\t ')
+        spaces = 16-len(task)
+        print(task, end=' ' * spaces)
         for key in tasks[task]:
             print(tasks[task][key], end='\t')
         print()
