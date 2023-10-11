@@ -7,9 +7,7 @@ commands = {
     'help': 'list_commands()',
     'a': 'add_task(tasks, *cmds)',
     'd': 'del_task(tasks, cmds)',
-    'c': 'cpl_task(tasks, cmds)',
-    'list': 'list_tasks(tasks)',
-    'dsp': 'tt_display(tasks)'
+    'c': 'cpl_task(tasks, cmds)'
 }
 
 
@@ -57,17 +55,26 @@ def save_user_data(data, z: str) -> None:
 
 def add_task(tasks, name, do=None, due=None, prior=None, proj=None, notes=None) -> None:
     # adds a task to the data/tasks.json file
+    # TODO: add way to interact with just a single task attributeas
     tasks[name] = {'do': do, 'due': due, 'prior': prior, 'proj': proj, 'notes': notes}
     save_user_data(tasks, 'tasks')
     print(f'+ Task {name} added.')
+
+
+def check_for_indexes(tasks, names) -> list:
+    # checks if the names are indexes
+    # returns a list of the names
+    for i, name in enumerate(names):
+        if type(name) is int: names[i] = list(tasks.keys())[name]
+    return names
 
 
 def del_task(tasks, names) -> None:
     # moves a task to the trash.json file
     with open('data/trash.json', 'r') as f:
         trash = json.load(f)
-    
-    for name in names:
+
+    for name in check_for_indexes(tasks, names):
         try:
             trash[name] = tasks.pop(name)
             print(f'- Task {name} moved to trash.')
@@ -83,7 +90,7 @@ def cpl_task(tasks, names) -> None:
     with open('data/completed.json', 'r') as f:
         completed = json.load(f)
     
-    for name in names:
+    for name in check_for_indexes(tasks, names):
         try:
             completed[name] = tasks.pop(name)
             print(f'✓ Task {name} completed.')
@@ -101,7 +108,7 @@ def list_tasks(tasks) -> None:
 
 
 def tt_display(tasks):
-    header = ['#', 'name', 'do', 'due', 'prior', 'proj', 'notes']
+    header = [' ', 'name', 'do', 'due', 'prior', 'proj', 'notes'] #TODO: generate this instead of hardcoding
     # convert dic to displayable array
     data = []
     for i, task in enumerate(tasks):
@@ -120,3 +127,15 @@ def tt_display(tasks):
         header=header, 
         padding=(0, 1), 
         alignment='l')
+    
+
+def get_process_cmds() -> tuple:
+    # processes the commands
+    # returns a list of the commands
+    cmds = input('tasker > ').split()
+    for i, cmd in enumerate(cmds):
+        # if the string contains only numbers, change it to an int
+        if cmd.isdigit():
+            cmds[i] = int(cmd)
+
+    return cmds[0], cmds[1:]
