@@ -3,11 +3,12 @@ import os
 
 
 commands = {
+    'help': 'list_commands()',
     'add': 'add_task(tasks, *cmds)',
     'del': 'del_task(tasks, cmds)',
     'cpl': 'cpl_task(tasks, cmds)',
     'list': 'list_tasks(tasks)',
-    'help': 'list_commands()',
+    'display': 'display_tasks(tasks)',
 }
 
 
@@ -96,3 +97,14 @@ def list_tasks(tasks) -> None:
     # lists all tasks in the tasks.json file
     for task in tasks:
         print(task, tasks[task])
+
+
+def display_tasks(tasks):
+    # displays all tasks in the tasks.json file in a table format
+    # TODO: fix tabbing
+    print('name \t\t do \t due \t prior \t proj')
+    for task in tasks:
+        print(task, end='\t\t ')
+        for key in tasks[task]:
+            print(tasks[task][key], end='\t')
+        print()
