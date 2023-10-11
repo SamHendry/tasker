@@ -137,5 +137,8 @@ def get_process_cmds() -> tuple:
         # if the string contains only numbers, change it to an int
         if cmd.isdigit():
             cmds[i] = int(cmd)
+        else:
+            # turns dashes into spaces
+            cmds[i] = cmd.replace('-', ' ')
 
     return cmds[0], cmds[1:]
