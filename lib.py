@@ -6,8 +6,8 @@ import termtables as tt # needs to be installed (TODO: put in requirements.txt)
 commands = {
     'help': 'list_commands()',
     'a': 'add_task(tasks, cmds)',
-    'd': 'del_task(tasks, cmds)',
-    'c': 'cpl_task(tasks, cmds)',
+    'd': 'delete_task(tasks, cmds)',
+    'c': 'complete_task(tasks, cmds)',
     'm': 'modify_task(tasks, cmds)'
 }
 
@@ -92,17 +92,19 @@ def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support mo
         for cmd in cmds[1:]:
             if cmd.startswith('do:'):
                 tasks[name]['do'] = cmd[3:]
+                print(f'✓ Task {name} modified (do -> {cmd[3:]}).')
             elif cmd.startswith('due:'):
                 tasks[name]['due'] = cmd[4:]
+                print(f'✓ Task {name} modified (due -> {cmd[4:]}).')
             elif cmd.startswith('pri:'):
                 tasks[name]['prior'] = cmd[4:]
+                print(f'✓ Task {name} modified (pri -> {cmd[4:]}).')
             elif cmd.startswith('proj:'):
                 tasks[name]['proj'] = cmd[5:]
+                print(f'✓ Task {name} modified (proj -> {cmd[5:]}).')
             else:
                 print(f'X Invalid command {cmd}.')
-                # optional return
     save_user_data(tasks, 'tasks')
-    print(f'+ Task {name} modified.')
 
 def check_for_indexes(tasks, names) -> list:
     # checks if the names are indexes
@@ -112,7 +114,7 @@ def check_for_indexes(tasks, names) -> list:
     return names
 
 
-def del_task(tasks, names) -> None:
+def delete_task(tasks, names) -> None:
     # moves a task to the trash.json file
     with open('data/trash.json', 'r') as f:
         trash = json.load(f)
@@ -128,7 +130,7 @@ def del_task(tasks, names) -> None:
     save_user_data(trash, 'trash')
 
 
-def cpl_task(tasks, names) -> None:
+def complete_task(tasks, names) -> None:
     # moves a task to the completed.json file
     with open('data/completed.json', 'r') as f:
         completed = json.load(f)
