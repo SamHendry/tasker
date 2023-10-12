@@ -54,7 +54,7 @@ def save_user_data(data, z: str) -> None:
             json.dump(data, f, indent=4)
 
 
-def add_task(tasks, cmds) -> None:
+def add_task(tasks, cmds) -> None: # TODO: chanage to while loop to support more nuanced commands
     # adds a task to the tasks.json file
     name = cmds[0]
     do, due, prior, proj = None, None, None, None
@@ -70,29 +70,41 @@ def add_task(tasks, cmds) -> None:
             proj = cmd[5:]
         else:
             print(f'X Invalid command {cmd}.')
-            return # optional
+            # optional return
     tasks[name] = {'do': do, 'due': due, 'prior': prior, 'proj': proj}
     save_user_data(tasks, 'tasks')
     print(f'+ Task {name} added.')
 
 
-def modify_task(tasks, cmds) -> None:
-    # modifies a task
+def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support more nuanced commands
+    # modifies a task 
+    # with added support for batch modifications
     cmds = check_for_indexes(tasks, cmds)
-    name = cmds[0]
+    names = [cmds[0]]
+    # for i in range(1, len(cmds)):
+    #     if ':' in cmds[i]: break
+    #     names.append(cmds[i])
+    #     del cmds[i]
+    i = 1
+    while i < len(cmds):
+        if ':' in cmds[i]: break
+        names.append(cmds[i])
+        del cmds[i]
+        
     # gets specific attributes
-    for cmd in cmds[1:]:
-        if cmd.startswith('do:'):
-            tasks[name]['do'] = cmd[3:]
-        elif cmd.startswith('due:'):
-            tasks[name]['due'] = cmd[4:]
-        elif cmd.startswith('pri:'):
-            tasks[name]['prior'] = cmd[4:]
-        elif cmd.startswith('proj:'):
-            tasks[name]['proj'] = cmd[5:]
-        else:
-            print(f'X Invalid command {cmd}.')
-            return # optional
+    for name in names:
+        for cmd in cmds[1:]:
+            if cmd.startswith('do:'):
+                tasks[name]['do'] = cmd[3:]
+            elif cmd.startswith('due:'):
+                tasks[name]['due'] = cmd[4:]
+            elif cmd.startswith('pri:'):
+                tasks[name]['prior'] = cmd[4:]
+            elif cmd.startswith('proj:'):
+                tasks[name]['proj'] = cmd[5:]
+            else:
+                print(f'X Invalid command {cmd}.')
+                # optional return
     save_user_data(tasks, 'tasks')
     print(f'+ Task {name} modified.')
 
