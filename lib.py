@@ -23,21 +23,22 @@ def check_user_data():
     # checks for the relevant files
     # if not, creates them
 
+    # the data folder
+    if not os.path.exists('data'):
+        os.mkdir('data')
+
     # the tasks.json file
     if not os.path.exists('data/tasks.json'):
-        print('No tasks file found. Creating a new one...')
         with open('data/tasks.json', 'w') as f:
             json.dump({}, f)
 
     # the trash.json file
     if not os.path.exists('data/trash.json'):
-        print('No trash file found. Creating a new one...')
         with open('data/trash.json', 'w') as f:
             json.dump({}, f)
     
     # the completed.json file
     if not os.path.exists('data/completed.json'):
-        print('No completed file found. Creating a new one...')
         with open('data/completed.json', 'w') as f:
             json.dump({}, f)
 
@@ -185,6 +186,7 @@ def get_process_cmds() -> tuple:
     # processes the commands
     # returns a list of the commands
     cmds = input('tasker > ').split()
+    if len(cmds) == 0: return 'help', []
     for i, cmd in enumerate(cmds):
         # if the string contains only numbers, change it to an int
         if cmd.isdigit():

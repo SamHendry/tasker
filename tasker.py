@@ -10,7 +10,7 @@ def main():
     
     # initial display
     if tasks == {}:
-        print('No tasks found.')
+        print('No tasks.')
     else:
         tt_display(tasks)
 
@@ -22,7 +22,8 @@ def main():
         if first == 'exit': break
         try:
             exec(commands[first])
-            tt_display(tasks)
+            if tasks: tt_display(tasks)
+            else: print('No tasks.')
         except KeyError:
             print('Command not found.')
 
