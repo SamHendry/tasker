@@ -81,10 +81,6 @@ def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support mo
     # with added support for batch modifications
     cmds = check_for_indexes(tasks, cmds)
     names = [cmds[0]]
-    # for i in range(1, len(cmds)):
-    #     if ':' in cmds[i]: break
-    #     names.append(cmds[i])
-    #     del cmds[i]
     i = 1
     while i < len(cmds):
         if ':' in cmds[i]: break
