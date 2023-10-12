@@ -93,16 +93,16 @@ def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support mo
         for cmd in cmds[1:]:
             if cmd.startswith('do:'):
                 tasks[name]['do'] = cmd[3:]
-                print(f'✓ Task {name} modified (do -> {cmd[3:]}).')
+                print(f'Task {name} modified (do -> {cmd[3:]}).')
             elif cmd.startswith('due:'):
                 tasks[name]['due'] = cmd[4:]
-                print(f'✓ Task {name} modified (due -> {cmd[4:]}).')
+                print(f'Task {name} modified (due -> {cmd[4:]}).')
             elif cmd.startswith('pri:'):
                 tasks[name]['prior'] = cmd[4:]
-                print(f'✓ Task {name} modified (pri -> {cmd[4:]}).')
+                print(f'Task {name} modified (pri -> {cmd[4:]}).')
             elif cmd.startswith('proj:'):
                 tasks[name]['proj'] = cmd[5:]
-                print(f'✓ Task {name} modified (proj -> {cmd[5:]}).')
+                print(f'Task {name} modified (proj -> {cmd[5:]}).')
             else:
                 print(f'X Invalid command {cmd}.')
     save_user_data(tasks, 'tasks')
