@@ -56,7 +56,6 @@ def save_user_data(data, z: str) -> None:
 
 def add_task(tasks, cmds) -> None:
     # adds a task to the tasks.json file
-    # TODO: add way to interact with just a single task attributeas
     name = cmds[0]
     do, due, prior, proj = None, None, None, None
     # gets specific attributes
@@ -137,16 +136,16 @@ def cpl_task(tasks, names) -> None:
     save_user_data(completed, 'completed')
 
 
-# TODO: modify task function
-
-
 def list_tasks(tasks) -> None:
     # lists all tasks in the tasks.json file
     for task in tasks:
         print(task, tasks[task])
 
 
-def tt_display(tasks):
+# TODO: display settings command
+
+
+def tt_display(tasks): # TODO: sorting by pri and use display settings
     header = [' ', 'name', 'do', 'due', 'pri', 'proj']
     # convert dic to displayable array
     data = []
@@ -173,7 +172,6 @@ def tt_display(tasks):
     
 
 def get_process_cmds() -> tuple: 
-    #TODO: redo command system to handle explicit calls to change/delete specifc attributes and tasks
     # processes the commands
     # returns a list of the commands
     cmds = input('tasker > ').split()
