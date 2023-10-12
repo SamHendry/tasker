@@ -5,9 +5,10 @@ import termtables as tt # needs to be installed (TODO: put in requirements.txt)
 
 commands = {
     'help': 'list_commands()',
-    'a': 'add_task(tasks, *cmds)',
+    'a': 'add_task(tasks, cmds)',
     'd': 'del_task(tasks, cmds)',
-    'c': 'cpl_task(tasks, cmds)'
+    'c': 'cpl_task(tasks, cmds)',
+    'm': 'modify_task(tasks, cmds)'
 }
 
 
@@ -24,19 +25,19 @@ def check_user_data():
 
     # the tasks.json file
     if not os.path.exists('data/tasks.json'):
-        print('No tasks.json file found. Creating a new one...')
+        print('No tasks file found. Creating a new one...')
         with open('data/tasks.json', 'w') as f:
             json.dump({}, f)
 
     # the trash.json file
     if not os.path.exists('data/trash.json'):
-        print('No trash.json file found. Creating a new one...')
+        print('No trash file found. Creating a new one...')
         with open('data/trash.json', 'w') as f:
             json.dump({}, f)
     
     # the completed.json file
     if not os.path.exists('data/completed.json'):
-        print('No completed.json file found. Creating a new one...')
+        print('No completed file found. Creating a new one...')
         with open('data/completed.json', 'w') as f:
             json.dump({}, f)
 
@@ -53,13 +54,48 @@ def save_user_data(data, z: str) -> None:
             json.dump(data, f, indent=4)
 
 
-def add_task(tasks, name, do=None, due=None, prior=None, proj=None, notes=None) -> None:
+def add_task(tasks, cmds) -> None:
     # adds a task to the tasks.json file
     # TODO: add way to interact with just a single task attributeas
-    tasks[name] = {'do': do, 'due': due, 'prior': prior, 'proj': proj, 'notes': notes}
+    name = cmds[0]
+    do, due, prior, proj = None, None, None, None
+    # gets specific attributes
+    for cmd in cmds[1:]:
+        if cmd.startswith('do:'):
+            do = cmd[3:]
+        elif cmd.startswith('due:'):
+            due = cmd[4:]
+        elif cmd.startswith('pri:'):
+            prior = cmd[4:]
+        elif cmd.startswith('proj:'):
+            proj = cmd[5:]
+        else:
+            print(f'X Invalid command {cmd}.')
+            return # optional
+    tasks[name] = {'do': do, 'due': due, 'prior': prior, 'proj': proj}
     save_user_data(tasks, 'tasks')
     print(f'+ Task {name} added.')
 
+
+def modify_task(tasks, cmds) -> None:
+    # modifies a task
+    cmds = check_for_indexes(tasks, cmds)
+    name = cmds[0]
+    # gets specific attributes
+    for cmd in cmds[1:]:
+        if cmd.startswith('do:'):
+            tasks[name]['do'] = cmd[3:]
+        elif cmd.startswith('due:'):
+            tasks[name]['due'] = cmd[4:]
+        elif cmd.startswith('pri:'):
+            tasks[name]['prior'] = cmd[4:]
+        elif cmd.startswith('proj:'):
+            tasks[name]['proj'] = cmd[5:]
+        else:
+            print(f'X Invalid command {cmd}.')
+            return # optional
+    save_user_data(tasks, 'tasks')
+    print(f'+ Task {name} modified.')
 
 def check_for_indexes(tasks, names) -> list:
     # checks if the names are indexes
@@ -79,7 +115,7 @@ def del_task(tasks, names) -> None:
             trash[name] = tasks.pop(name)
             print(f'- Task {name} moved to trash.')
         except KeyError:
-            print(f'- Task {name} not found.')
+            print(f'X Task {name} not found.')
     
     save_user_data(tasks, 'tasks')
     save_user_data(trash, 'trash')
@@ -95,7 +131,7 @@ def cpl_task(tasks, names) -> None:
             completed[name] = tasks.pop(name)
             print(f'✓ Task {name} completed.')
         except KeyError:
-            print(f'✓ Task {name} not found.')
+            print(f'X Task {name} not found.')
     
     save_user_data(tasks, 'tasks')
     save_user_data(completed, 'completed')
@@ -111,7 +147,7 @@ def list_tasks(tasks) -> None:
 
 
 def tt_display(tasks):
-    header = [' ', 'name', 'do', 'due', 'prior', 'proj', 'notes'] #TODO: generate this instead of hardcoding
+    header = [' ', 'name', 'do', 'due', 'pri', 'proj']
     # convert dic to displayable array
     data = []
     for i, task in enumerate(tasks):
@@ -122,8 +158,12 @@ def tt_display(tasks):
             tasks[task]['due'], 
             tasks[task]['prior'], 
             tasks[task]['proj'], 
-            tasks[task]['notes']
         ])
+    for i, row in enumerate(data):
+        for j, col in enumerate(row):
+            if col is None:
+                data[i][j] = ''
+                
     # display
     tt.print(
         data, 
