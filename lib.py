@@ -80,13 +80,15 @@ def add_task(tasks, cmds) -> None: # TODO: chanage to while loop to support more
 def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support more nuanced commands
     # modifies a task 
     # with added support for batch modifications
-    cmds = check_for_indexes(tasks, cmds)
-    names = [cmds[0]]
-    i = 1
+    i, names = 0, []
     while i < len(cmds):
-        if ':' in cmds[i]: break
+        if ':' in cmds[i]: break # names cannot contain ':'
         names.append(cmds[i])
         del cmds[i]
+    if names:
+        names = check_for_indexes(tasks, names)
+    else:
+        names = tasks.keys() # if no names, modify all
         
     # gets specific attributes
     for name in names:
@@ -109,9 +111,9 @@ def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support mo
 
 def check_for_indexes(tasks, names) -> list:
     # checks if the names are indexes
-    # returns a list of the names
+    # returns a list of the actual names
     for i, name in enumerate(names):
-        if type(name) is int: names[i] = list(tasks.keys())[name]
+        if type(name) is int: names[i] = tasks.keys()[name]
     return names
 
 
