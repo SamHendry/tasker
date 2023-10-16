@@ -170,7 +170,6 @@ def tt_display(tasks):
 
     # display
     header = [' ', 'name']; header.extend(tasks[list(tasks.keys())[0]].keys())
-    print(header)
     tt.print(
         data, 
         header=header, 
