@@ -6,8 +6,8 @@ import termtables as tt # needs to be installed (TODO: put in requirements.txt)
 commands = {
     'help': 'list_commands()',
     'a': 'add_task(tasks, cmds)',
-    'd': 'del_task(tasks, cmds)',
-    'c': 'cpl_task(tasks, cmds)',
+    'd': 'delete_task(tasks, cmds)',
+    'c': 'complete_task(tasks, cmds)',
     'm': 'modify_task(tasks, cmds)'
 }
 
@@ -23,21 +23,22 @@ def check_user_data():
     # checks for the relevant files
     # if not, creates them
 
+    # the data folder
+    if not os.path.exists('data'):
+        os.mkdir('data')
+
     # the tasks.json file
     if not os.path.exists('data/tasks.json'):
-        print('No tasks file found. Creating a new one...')
         with open('data/tasks.json', 'w') as f:
             json.dump({}, f)
 
     # the trash.json file
     if not os.path.exists('data/trash.json'):
-        print('No trash file found. Creating a new one...')
         with open('data/trash.json', 'w') as f:
             json.dump({}, f)
     
     # the completed.json file
     if not os.path.exists('data/completed.json'):
-        print('No completed file found. Creating a new one...')
         with open('data/completed.json', 'w') as f:
             json.dump({}, f)
 
@@ -79,44 +80,44 @@ def add_task(tasks, cmds) -> None: # TODO: chanage to while loop to support more
 def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support more nuanced commands
     # modifies a task 
     # with added support for batch modifications
-    cmds = check_for_indexes(tasks, cmds)
-    names = [cmds[0]]
-    # for i in range(1, len(cmds)):
-    #     if ':' in cmds[i]: break
-    #     names.append(cmds[i])
-    #     del cmds[i]
-    i = 1
+    i, names = 0, []
     while i < len(cmds):
-        if ':' in cmds[i]: break
+        if ':' in cmds[i]: break # names cannot contain ':'
         names.append(cmds[i])
         del cmds[i]
+    if names:
+        names = check_for_indexes(tasks, names)
+    else:
+        names = tasks.keys() # if no names, modify all
         
     # gets specific attributes
     for name in names:
         for cmd in cmds[1:]:
             if cmd.startswith('do:'):
                 tasks[name]['do'] = cmd[3:]
+                print(f'Task {name} modified (do -> {cmd[3:]}).')
             elif cmd.startswith('due:'):
                 tasks[name]['due'] = cmd[4:]
+                print(f'Task {name} modified (due -> {cmd[4:]}).')
             elif cmd.startswith('pri:'):
                 tasks[name]['prior'] = cmd[4:]
+                print(f'Task {name} modified (pri -> {cmd[4:]}).')
             elif cmd.startswith('proj:'):
                 tasks[name]['proj'] = cmd[5:]
+                print(f'Task {name} modified (proj -> {cmd[5:]}).')
             else:
                 print(f'X Invalid command {cmd}.')
-                # optional return
     save_user_data(tasks, 'tasks')
-    print(f'+ Task {name} modified.')
 
 def check_for_indexes(tasks, names) -> list:
     # checks if the names are indexes
-    # returns a list of the names
+    # returns a list of the actual names
     for i, name in enumerate(names):
-        if type(name) is int: names[i] = list(tasks.keys())[name]
+        if type(name) is int: names[i] = tasks.keys()[name]
     return names
 
 
-def del_task(tasks, names) -> None:
+def delete_task(tasks, names) -> None:
     # moves a task to the trash.json file
     with open('data/trash.json', 'r') as f:
         trash = json.load(f)
@@ -132,7 +133,7 @@ def del_task(tasks, names) -> None:
     save_user_data(trash, 'trash')
 
 
-def cpl_task(tasks, names) -> None:
+def complete_task(tasks, names) -> None:
     # moves a task to the completed.json file
     with open('data/completed.json', 'r') as f:
         completed = json.load(f)
@@ -187,6 +188,7 @@ def get_process_cmds() -> tuple:
     # processes the commands
     # returns a list of the commands
     cmds = input('tasker > ').split()
+    if len(cmds) == 0: return 'help', []
     for i, cmd in enumerate(cmds):
         # if the string contains only numbers, change it to an int
         if cmd.isdigit():
