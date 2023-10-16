@@ -1,1 +1,1 @@
-py tasker.py
+py C:\Users\samue\OneDrive\Documents\repos\tasker.py
