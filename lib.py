@@ -155,28 +155,22 @@ def list_tasks(tasks) -> None:
         print(task, tasks[task])
 
 
-# TODO: display settings command
-
-
-def tt_display(tasks): # TODO: sorting by pri and use display settings
-    header = [' ', 'name', 'do', 'due', 'pri', 'proj']
+def tt_display(tasks): 
+    # TODO: display settings
+    # TODO: fix indexes
+        
     # convert dic to displayable array
     data = []
     for i, task in enumerate(tasks):
-        data.append([
-            i,
-            task, 
-            tasks[task]['do'], 
-            tasks[task]['due'], 
-            tasks[task]['prior'], 
-            tasks[task]['proj'], 
-        ])
-    for i, row in enumerate(data):
-        for j, col in enumerate(row):
-            if col is None:
-                data[i][j] = ''
-                
+        data.append([i, task])
+        data[-1].extend([element if element else '' for element in tasks[task].values()]) # there has got to be a simpler way lmao
+    
+    # sort by priority
+    data = sorted(data, key=lambda x: x[4])
+
     # display
+    header = [' ', 'name']; header.extend(tasks[list(tasks.keys())[0]].keys())
+    print(header)
     tt.print(
         data, 
         header=header, 
