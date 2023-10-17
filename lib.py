@@ -6,8 +6,8 @@ import termtables as tt # needs to be installed (TODO: put in requirements.txt)
 commands = {
     'help': 'list_commands()',
     'a': 'add_task(tasks, names, **kwargs)',
-    'd': 'delete_task(tasks, names)',
-    'c': 'complete_task(tasks, names)',
+    'r': 'remove_task(tasks, names)',
+    'c': 'remove_task(tasks, names)',
     'm': 'modify_task(tasks, names, **kwargs)'
 }
 
@@ -36,11 +36,6 @@ def check_user_data():
     if not os.path.exists('data/trash.json'):
         with open('data/trash.json', 'w') as f:
             json.dump({}, f)
-    
-    # the completed.json file
-    if not os.path.exists('data/completed.json'):
-        with open('data/completed.json', 'w') as f:
-            json.dump({}, f)
 
 
 def save_user_data(data, z: str) -> None:
@@ -49,9 +44,6 @@ def save_user_data(data, z: str) -> None:
             json.dump(data, f, indent=4)
     elif z == 'trash':
         with open('data/trash.json', 'w') as f:
-            json.dump(data, f, indent=4)
-    elif z == 'completed':
-        with open('data/completed.json', 'w') as f:
             json.dump(data, f, indent=4)
 
 
@@ -103,7 +95,7 @@ def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support mo
     save_user_data(tasks, 'tasks')
 
 
-def delete_task(tasks, names) -> None:
+def remove_task(tasks, names) -> None:
     # moves a task to the trash.json file
     with open('data/trash.json', 'r') as f:
         trash = json.load(f)
@@ -117,22 +109,6 @@ def delete_task(tasks, names) -> None:
     
     save_user_data(tasks, 'tasks')
     save_user_data(trash, 'trash')
-
-
-def complete_task(tasks, names) -> None:
-    # moves a task to the completed.json file
-    with open('data/completed.json', 'r') as f:
-        completed = json.load(f)
-    
-    for name in names:
-        try:
-            completed[name] = tasks.pop(name)
-            print(f'✓ Task {name} completed.')
-        except KeyError:
-            print(f'X Task {name} not found.')
-    
-    save_user_data(tasks, 'tasks')
-    save_user_data(completed, 'completed')
 
 
 def list_tasks(tasks) -> None:
