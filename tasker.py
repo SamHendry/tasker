@@ -9,19 +9,17 @@ def main():
         tasks = json.load(f)
     
     # initial display
-    if tasks == {}:
-        print('No tasks.')
-    else:
-        tt_display(tasks)
+    if tasks: tt_display(tasks)
+    else: print('No tasks.')
 
     while True:
         # get commands
-        first, cmds = get_process_cmds()
+        cmd, names, kwargs = get_cmds(tasks)
 
         # execute commands
-        if first == 'exit': break
+        if cmd == 'exit': break
         try:
-            exec(commands[first])
+            exec(commands[cmd])
             if tasks: tt_display(tasks)
             else: print('No tasks.')
         except KeyError:

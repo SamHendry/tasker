@@ -5,10 +5,10 @@ import termtables as tt # needs to be installed (TODO: put in requirements.txt)
 
 commands = {
     'help': 'list_commands()',
-    'a': 'add_task(tasks, cmds)',
-    'd': 'delete_task(tasks, cmds)',
-    'c': 'complete_task(tasks, cmds)',
-    'm': 'modify_task(tasks, cmds)'
+    'a': 'add_task(tasks, names, **kwargs)',
+    'd': 'delete_task(tasks, names)',
+    'c': 'complete_task(tasks, names)',
+    'm': 'modify_task(tasks, names, **kwargs)'
 }
 
 
@@ -55,26 +55,22 @@ def save_user_data(data, z: str) -> None:
             json.dump(data, f, indent=4)
 
 
-def add_task(tasks, cmds) -> None: # TODO: chanage to while loop to support more nuanced commands
-    # adds a task to the tasks.json file
-    name = cmds[0]
-    do, due, prior, proj = None, None, None, None
-    # gets specific attributes
-    for cmd in cmds[1:]:
-        if cmd.startswith('do:'):
-            do = cmd[3:]
-        elif cmd.startswith('due:'):
-            due = cmd[4:]
-        elif cmd.startswith('pri:'):
-            prior = cmd[4:]
-        elif cmd.startswith('proj:'):
-            proj = cmd[5:]
+def add_task(tasks, names, do=None, due=None, pri=None, proj=None) -> None: # TODO: chanage to while loop to support more nuanced commands
+    '''adds a task to the tasks.json file'''
+
+    for name in names:
+        if name in tasks:
+            print(f'X Task {name} already exists.')
         else:
-            print(f'X Invalid command {cmd}.')
-            # optional return
-    tasks[name] = {'do': do, 'due': due, 'prior': prior, 'proj': proj}
+            tasks[name] = {
+                'do': do,
+                'due': due,
+                'prior': pri,
+                'proj': proj
+            }
+            print(f'+ Task {name} added.')
+    
     save_user_data(tasks, 'tasks')
-    print(f'+ Task {name} added.')
 
 
 def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support more nuanced commands
@@ -82,13 +78,10 @@ def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support mo
     # with added support for batch modifications
     i, names = 0, []
     while i < len(cmds):
-        if ':' in cmds[i]: break # names cannot contain ':'
+        if ':' in str(cmds[i]): break # names cannot contain ':'
         names.append(cmds[i])
         del cmds[i]
-    if names:
-        names = check_for_indexes(tasks, names)
-    else:
-        names = tasks.keys() # if no names, modify all
+    
         
     # gets specific attributes
     for name in names:
@@ -109,20 +102,13 @@ def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support mo
                 print(f'X Invalid command {cmd}.')
     save_user_data(tasks, 'tasks')
 
-def check_for_indexes(tasks, names) -> list:
-    # checks if the names are indexes
-    # returns a list of the actual names
-    for i, name in enumerate(names):
-        if type(name) is int: names[i] = tasks.keys()[name]
-    return names
-
 
 def delete_task(tasks, names) -> None:
     # moves a task to the trash.json file
     with open('data/trash.json', 'r') as f:
         trash = json.load(f)
 
-    for name in check_for_indexes(tasks, names):
+    for name in names:
         try:
             trash[name] = tasks.pop(name)
             print(f'- Task {name} moved to trash.')
@@ -138,7 +124,7 @@ def complete_task(tasks, names) -> None:
     with open('data/completed.json', 'r') as f:
         completed = json.load(f)
     
-    for name in check_for_indexes(tasks, names):
+    for name in names:
         try:
             completed[name] = tasks.pop(name)
             print(f'✓ Task {name} completed.')
@@ -175,19 +161,34 @@ def tt_display(tasks):
         header=header, 
         padding=(0, 1), 
         alignment='l')
+
+
+def get_cmds(tasks) -> tuple: 
+    '''processes the raw input'''
+
+    # gets input
+    user_input = input('tasker > ').split()
+    cmd = user_input.pop(0)
+
+    # gets names and kwargs
+    names, kwargs = [], []
+    while user_input:
+        if '=' in user_input[0]: # then it's a kwarg
+            kwargs.append(user_input.pop(0))
+        else: # then it's a name
+            names.append(user_input.pop(0))
+
+    # if a name is an index, convert it to the real name
+    for i, name in enumerate(names):
+        try:
+            names[i] = list(tasks.keys())[int(name)]
+        except ValueError:
+            pass
     
+    # takes a list of kwargs and return's the corresponding dict
+    kwargs_dict = {}
+    for kwarg in kwargs:
+        kwarg = kwarg.split('=')
+        kwargs_dict[kwarg[0]] = int(kwarg[1]) if isinstance(kwarg[1], int) else kwarg[1]
 
-def get_process_cmds() -> tuple: 
-    # processes the commands
-    # returns a list of the commands
-    cmds = input('tasker > ').split()
-    if len(cmds) == 0: return 'help', []
-    for i, cmd in enumerate(cmds):
-        # if the string contains only numbers, change it to an int
-        if cmd.isdigit():
-            cmds[i] = int(cmd)
-        else:
-            # turns dashes into spaces
-            cmds[i] = cmd.replace('-', ' ')
-
-    return cmds[0], cmds[1:]
+    return cmd, names, kwargs_dict
