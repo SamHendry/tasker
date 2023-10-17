@@ -33,18 +33,29 @@ def check_user_data():
             json.dump({}, f)
 
     # the trash.json file
-    if not os.path.exists('data/trash.json'):
-        with open('data/trash.json', 'w') as f:
-            json.dump({}, f)
+    if not os.path.exists('data/trash.txt'):
+        with open('data/trash.txt', 'w') as f:
+            f.write('')
+
+
+def sort_tasks(tasks, sort_by='pri') -> None: #TODO: can modify to sort by dates later
+    '''sorts tasks by sort_by'''
+    task_list = list(tasks.items())
+    task_list.sort(key=lambda x: x[1][sort_by] if x[1][sort_by] else '999')
+    tasks.clear()
+    tasks.update(dict(task_list))
 
 
 def save_user_data(data, z: str) -> None:
+    '''sorts and saves data to the relevant file'''
+
     if z == 'tasks':
+        sort_tasks(data)
         with open('data/tasks.json', 'w') as f:
             json.dump(data, f, indent=4)
     elif z == 'trash':
-        with open('data/trash.json', 'w') as f:
-            json.dump(data, f, indent=4)
+        with open('data/trash.txt', 'a') as f:
+            f.write(data + '\n')
 
 
 def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
@@ -57,7 +68,7 @@ def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
             tasks[name] = {
                 'do': do,
                 'due': due,
-                'prior': pri,
+                'pri': pri,
                 'proj': proj
             }
             print(f'+ Task {name} added.')
@@ -77,7 +88,7 @@ def modify_task(tasks, names, do=None, due=None, pri=None, proj=None) -> None:
 
         if do: tasks[name]['do'] = do
         if due: tasks[name]['due'] = due
-        if pri: tasks[name]['prior'] = pri
+        if pri: tasks[name]['pri'] = pri
         if proj: tasks[name]['proj'] = proj
         print(f'* Task {name} modified.')
     
@@ -86,24 +97,16 @@ def modify_task(tasks, names, do=None, due=None, pri=None, proj=None) -> None:
 
 def remove_task(tasks, names) -> None:
     # moves a task to the trash.json file
-    with open('data/trash.json', 'r') as f:
-        trash = json.load(f)
-
+    removed = []
     for name in names:
         try:
-            trash[name] = tasks.pop(name)
+            removed.append(tasks.pop(name))
             print(f'- Task {name} moved to trash.')
         except KeyError:
             print(f'X Task {name} not found.')
     
     save_user_data(tasks, 'tasks')
-    save_user_data(trash, 'trash')
-
-
-def list_tasks(tasks) -> None:
-    # lists all tasks in the tasks.json file
-    for task in tasks:
-        print(task, tasks[task])
+    save_user_data(removed, 'trash')
 
 
 def tt_display(tasks): 
@@ -114,10 +117,7 @@ def tt_display(tasks):
     data = []
     for i, task in enumerate(tasks):
         data.append([i, task])
-        data[-1].extend([element if element else '' for element in tasks[task].values()]) # there has got to be a simpler way lmao
-    
-    # sort by priority
-    data = sorted(data, key=lambda x: x[4])
+        data[-1].extend([element for element in tasks[task].values()])
 
     # display
     header = [' ', 'name']; header.extend(tasks[list(tasks.keys())[0]].keys())
@@ -144,6 +144,7 @@ def get_cmds(tasks) -> tuple:
             names.append(user_input.pop(0))
 
     # if a name is an index, convert it to the real name
+    # TODO: fix indexes
     for i, name in enumerate(names):
         try:
             names[i] = list(tasks.keys())[int(name)]

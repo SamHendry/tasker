@@ -16,6 +16,7 @@ def main():
         # get commands
         cmd, names, kwargs = get_cmds(tasks)
 
+        print(cmd)
         # execute commands
         if cmd == 'exit': break
         try:
