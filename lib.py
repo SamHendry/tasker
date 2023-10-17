@@ -47,7 +47,7 @@ def save_user_data(data, z: str) -> None:
             json.dump(data, f, indent=4)
 
 
-def add_task(tasks, names, do=None, due=None, pri=None, proj=None) -> None: # TODO: chanage to while loop to support more nuanced commands
+def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
     '''adds a task to the tasks.json file'''
 
     for name in names:
@@ -65,33 +65,22 @@ def add_task(tasks, names, do=None, due=None, pri=None, proj=None) -> None: # TO
     save_user_data(tasks, 'tasks')
 
 
-def modify_task(tasks, cmds) -> None: # TODO: change to while loop to support more nuanced commands
-    # modifies a task 
-    # with added support for batch modifications
-    i, names = 0, []
-    while i < len(cmds):
-        if ':' in str(cmds[i]): break # names cannot contain ':'
-        names.append(cmds[i])
-        del cmds[i]
-    
+def modify_task(tasks, names, do=None, due=None, pri=None, proj=None) -> None:
+    '''modifies a task'''
+
+    names = list(tasks.keys()) if not names else names # support for batch modifications
         
-    # gets specific attributes
     for name in names:
-        for cmd in cmds[1:]:
-            if cmd.startswith('do:'):
-                tasks[name]['do'] = cmd[3:]
-                print(f'Task {name} modified (do -> {cmd[3:]}).')
-            elif cmd.startswith('due:'):
-                tasks[name]['due'] = cmd[4:]
-                print(f'Task {name} modified (due -> {cmd[4:]}).')
-            elif cmd.startswith('pri:'):
-                tasks[name]['prior'] = cmd[4:]
-                print(f'Task {name} modified (pri -> {cmd[4:]}).')
-            elif cmd.startswith('proj:'):
-                tasks[name]['proj'] = cmd[5:]
-                print(f'Task {name} modified (proj -> {cmd[5:]}).')
-            else:
-                print(f'X Invalid command {cmd}.')
+        if name not in tasks: 
+            print(f'X Task {name} not found.')
+            continue
+
+        if do: tasks[name]['do'] = do
+        if due: tasks[name]['due'] = due
+        if pri: tasks[name]['prior'] = pri
+        if proj: tasks[name]['proj'] = proj
+        print(f'* Task {name} modified.')
+    
     save_user_data(tasks, 'tasks')
 
 
