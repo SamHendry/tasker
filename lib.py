@@ -58,6 +58,10 @@ def save_user_data(data, z: str) -> None:
             f.write(data + '\n')
 
 
+def process_time(date: str): # TODO: implement using datetime
+    pass
+
+
 def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
     '''adds a task to the tasks.json file'''
 
@@ -66,8 +70,8 @@ def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
             print(f'X Task {name} already exists.')
         else:
             tasks[name] = {
-                'do': do,
-                'due': due,
+                'do': do, # TODO: procces time function call
+                'due': due, # TODO: process time function call
                 'pri': pri,
                 'proj': proj
             }
