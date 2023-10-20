@@ -1,15 +1,16 @@
 # Tasker
 
-This is a task CLI that I am building for fun and eventually to replace what I currently use. Suggestions are welcome.
+This is a task CLI that I built for fun.
 
 ## Functions
+Seperate each command, name, and property kwarg with a space. You can use indicies as names. The properties are: do, due, pri, and proj.
+
 - **add_task:**
-    - a \<task name> (optional) do:\<do date> due:\<due date> pri:\<priority> proj:\<project>
-- **delete_task:**
-    - d \<task names/indices seperated by spaces>
-- **complete_task:**
-    - c \<task names/indices seperated by spaces>
+    - a \[names] \*\*\[properties]
+- **remove_task:**
+    - d \[names]
+    - c \[names]
 - **modify_task:**
-    - m \<task names/indicies seperated by spaces. If none are given, all are modified> do:\<do date> due:\<due date> pri:\<priority> proj:\<project>
+    - m \[names] \*\*\[properties]
 - **list_commands:**
     - help
