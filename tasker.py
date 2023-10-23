@@ -24,7 +24,7 @@ def main():
         try:
             cmd, names, kwargs = get_cmds(tasks)
         except IndexError:
-            print('Please Enter a command.')
+            print('Please enter a valid command.')
             continue
 
         # execute commands
