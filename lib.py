@@ -7,7 +7,6 @@ commands = {
     'help': 'list_commands()',
     'a': 'add_task(tasks, names, **kwargs)',
     'r': 'remove_task(tasks, names)',
-    'c': 'remove_task(tasks, names)',
     'm': 'modify_task(tasks, names, **kwargs)'
 }
 
@@ -55,7 +54,7 @@ def save_user_data(data, z: str) -> None:
             json.dump(data, f, indent=4)
     elif z == 'trash':
         with open('data/trash.txt', 'a') as f:
-            f.write(data + '\n')
+            f.write(repr(data) + '\n')
 
 
 def process_time(date: str): # TODO: implement using datetime
@@ -101,6 +100,8 @@ def modify_task(tasks, names, do=None, due=None, pri=None, proj=None) -> None:
 
 def remove_task(tasks, names) -> None:
     # moves a task to the trash.json file
+    if names == ['a']:
+        names = list(tasks.keys())
     removed = []
     for name in names:
         try:
