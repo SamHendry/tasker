@@ -96,6 +96,8 @@ def modify_task(tasks, names, name=None, do=None, due=None, pri=None, proj=None)
         if pri: 
             if pri == '+': # for shifting priorities after the first is completed
                 tasks[edit_name]['pri'] = str(int(tasks[edit_name]['pri']) - 1) if tasks[edit_name]['pri'] else ''
+            if pri == '-':
+                tasks[edit_name]['pri'] = str(int(tasks[edit_name]['pri']) + 1) if tasks[edit_name]['pri'] else ''
             else:
                 tasks[edit_name]['pri'] = pri
         if proj: tasks[edit_name]['proj'] = proj
