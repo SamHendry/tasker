@@ -1,6 +1,6 @@
 import json
 import os
-import termtables as tt # needs to be installed (TODO: put in requirements.txt)
+import termtables as tt # needs to be installed (requirements.txt)
 
 
 commands = {
@@ -37,7 +37,7 @@ def check_user_data():
             f.write('')
 
 
-def sort_tasks(tasks, sort_by='pri') -> None: #TODO: can modify to sort by dates later
+def sort_tasks(tasks, sort_by='pri') -> None:
     '''sorts tasks by sort_by'''
     task_list = list(tasks.items())
     task_list.sort(key=lambda x: x[1][sort_by] if x[1][sort_by] else '999')
@@ -54,7 +54,8 @@ def save_user_data(data, z: str) -> None:
             json.dump(data, f, indent=4)
     elif z == 'trash':
         with open('data/trash.txt', 'a') as f:
-            f.write(repr(data) + '\n')
+            for item in data:
+                f.write(item + '\n')
 
 
 def process_time(date: str): # TODO: implement using datetime
@@ -69,8 +70,8 @@ def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
             print(f'X Task {name} already exists.')
         else:
             tasks[name] = {
-                'do': do, # TODO: procces time function call
-                'due': due, # TODO: process time function call
+                # 'do': do,
+                # 'due': due, 
                 'pri': pri,
                 'proj': proj
             }
@@ -90,8 +91,8 @@ def modify_task(tasks, names, name=None, do=None, due=None, pri=None, proj=None)
             continue
         
         if name: tasks[name] = tasks.pop(edit_name)
-        if do: tasks[edit_name]['do'] = do
-        if due: tasks[edit_name]['due'] = due
+        # if do: tasks[edit_name]['do'] = do
+        # if due: tasks[edit_name]['due'] = due
         if pri: 
             if pri == '+': # for shifting priorities after the first is completed
                 tasks[edit_name]['pri'] = str(int(tasks[edit_name]['pri']) - 1) if tasks[edit_name]['pri'] else ''
@@ -110,7 +111,8 @@ def remove_task(tasks, names) -> None:
     removed = []
     for name in names:
         try:
-            removed.append(tasks.pop(name))
+            del tasks[name]
+            removed.append(name)
             print(f'- Task {name} moved to trash.')
         except KeyError:
             print(f'X Task {name} not found.')
@@ -121,7 +123,6 @@ def remove_task(tasks, names) -> None:
 
 def tt_display(tasks): 
     # TODO: display settings
-    # TODO: fix indexes
         
     # convert dic to displayable array
     data = []
@@ -154,7 +155,6 @@ def get_cmds(tasks) -> tuple:
             names.append(user_input.pop(0))
 
     # if a name is an index, convert it to the real name
-    # TODO: fix indexes
     for i, name in enumerate(names):
         try:
             names[i] = list(tasks.keys())[int(name)]

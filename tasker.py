@@ -1,4 +1,11 @@
-from lib import *
+from lib import (tt_display, 
+                 add_task, 
+                 remove_task, 
+                 modify_task, 
+                 list_commands, 
+                 get_cmds, 
+                 check_user_data,
+                 commands)
 import json
 
 def main():
