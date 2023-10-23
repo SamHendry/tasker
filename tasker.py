@@ -21,7 +21,11 @@ def main():
 
     while True:
         # get commands
-        cmd, names, kwargs = get_cmds(tasks)
+        try:
+            cmd, names, kwargs = get_cmds(tasks)
+        except IndexError:
+            print('Please Enter a command.')
+            continue
 
         # execute commands
         if cmd == 'exit': break
