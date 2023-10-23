@@ -79,21 +79,22 @@ def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
     save_user_data(tasks, 'tasks')
 
 
-def modify_task(tasks, names, do=None, due=None, pri=None, proj=None) -> None:
+def modify_task(tasks, names, name=None, do=None, due=None, pri=None, proj=None) -> None:
     '''modifies a task'''
 
     names = list(tasks.keys()) if not names else names # support for batch modifications
         
-    for name in names:
-        if name not in tasks: 
-            print(f'X Task {name} not found.')
+    for edit_name in names:
+        if edit_name not in tasks: 
+            print(f'X Task {edit_name} not found.')
             continue
-
-        if do: tasks[name]['do'] = do
-        if due: tasks[name]['due'] = due
-        if pri: tasks[name]['pri'] = pri
-        if proj: tasks[name]['proj'] = proj
-        print(f'* Task {name} modified.')
+        
+        if name: tasks[name] = tasks.pop(edit_name)
+        if do: tasks[edit_name]['do'] = do
+        if due: tasks[edit_name]['due'] = due
+        if pri: tasks[edit_name]['pri'] = pri
+        if proj: tasks[edit_name]['proj'] = proj
+        print(f'* Task {edit_name} modified.')
     
     save_user_data(tasks, 'tasks')
 
