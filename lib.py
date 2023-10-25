@@ -1,6 +1,6 @@
 import json
 import os
-import termtables as tt # needs to be installed (requirements.txt)
+import termtables as tt
 
 
 commands = {
@@ -58,11 +58,7 @@ def save_user_data(data, z: str) -> None:
                 f.write(item + '\n')
 
 
-def process_time(date: str): # TODO: implement using datetime
-    pass
-
-
-def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
+def add_task(tasks, names, pri='', proj='') -> None:
     '''adds a task to the tasks.json file'''
 
     for name in names:
@@ -70,8 +66,6 @@ def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
             print(f'X Task {name} already exists.')
         else:
             tasks[name] = {
-                # 'do': do,
-                # 'due': due, 
                 'pri': pri,
                 'proj': proj
             }
@@ -80,7 +74,7 @@ def add_task(tasks, names, do='', due='', pri='', proj='') -> None:
     save_user_data(tasks, 'tasks')
 
 
-def modify_task(tasks, names, name=None, do=None, due=None, pri=None, proj=None) -> None:
+def modify_task(tasks, names, name=None, pri=None, proj=None) -> None:
     '''modifies a task'''
 
     names = list(tasks.keys()) if not names else names # support for batch modifications
@@ -91,8 +85,6 @@ def modify_task(tasks, names, name=None, do=None, due=None, pri=None, proj=None)
             continue
         
         if name: tasks[name] = tasks.pop(edit_name)
-        # if do: tasks[edit_name]['do'] = do
-        # if due: tasks[edit_name]['due'] = due
         if pri: 
             if pri == '+': # for shifting priorities after the first is completed
                 tasks[edit_name]['pri'] = str(int(tasks[edit_name]['pri']) - 1) if tasks[edit_name]['pri'] else ''
