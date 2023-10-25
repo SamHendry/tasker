@@ -1,6 +1,6 @@
 # Tasker
 
-This is a task CLI that I built for fun.
+This is a small task manager that I built for fun. It saves your tasks in a json file and you can interact with them by running the tasker.py script from the command line. [Mdtask](https://github.com/SamHendry/mdtask) will be a more mature version of this that saves to markdown and includes a time system.
 
 ## Functions
 Seperate each command, name, and property kwarg with a space. You can use indicies as names. The properties are: pri and proj.
