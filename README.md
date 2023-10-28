@@ -4,7 +4,7 @@ This is a small task manager that I built for fun. It saves your tasks in a json
 
 ## Functions
 Seperate each command, name, and property kwarg with a space. You can use indicies as names. The properties are: pri and proj.
-Sample command - **m 0 task1 pri=1** - which modifies the task at index 0 and task1, setting the priority of both to 1
+Here is a sample command which modifies the task at index 0 and task1, setting the priority of both to 1: **m 0 task1 pri=1**
 
 - **add_task:**
     - a \[names] \*\*\[properties]
